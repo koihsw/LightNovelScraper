@@ -7,71 +7,26 @@ MAINURL = "https://novelfull.net/a-regressors-tale-of-cultivation.html"
 url = MAINURL
 urlResponse = requests.get(url).text
 
-pageNum = 1
-pageUrl = f"?page={pageNum}"
-
 soup = BeautifulSoup(urlResponse, 'lxml')
 
-# find all divs with the class "row"
-div = soup.find_all('div', class_="row")
+lChapters = soup.find("ul", class_="l-chapters")
 
-# print div with chapters list
-chapterLinks = div[1].find_all('a')
+print(lChapters)
 
-# print(chapterLinks)
-# print(len(chapterLinks))
-# print(chapterLinks[len(chapterLinks) - 1])
+chapterList = soup.find_all("ul", class_="list-chapter")
 
+links = []
 
-try:
-    print("Enter Chapter Number: ")
-    enteredChapNum = int(input())
-    if enteredChapNum == 0:
-        print("0 is an invalid number")
-    else:
-        while True:
-            if enteredChapNum > pageNum * 50:
-                pageNum += 1
-                pageUrl = f"?page={pageNum}"
-                url = MAINURL + pageUrl
+for element in range(len(chapterList)):
+    
+    temp = chapterList[element].find_all("a")
+    for chapterNum in range(len(temp)):
+        print(temp[chapterNum]['title'])
 
-            elif enteredChapNum < pageNum * 50:
-                print("break")
+    links.append(chapterList[element].find_all("a"))
+    # print(chapterList[element].find_all("a")[0]['title'])
 
-                urlResponse = requests.get(url).text
-                soup = BeautifulSoup(urlResponse, 'lxml')
-                # find all divs with the class "row"
-                div = soup.find_all('div', class_="row")
+    # print(links[0]['title'])
 
-                # find all 'links' in the div
-                chapterLinks = div[1].find_all('a')
-                print(chapterLinks)
-                break
- 
-        print((enteredChapNum - 1) - ((pageNum - 1) * 50))
-        chapterObj = chapterLinks[(enteredChapNum - 1) - ((pageNum - 1) * 50)]
-        print(chapterObj['title'])
-        url = domain + chapterObj['href']
-        print(url)
-        
-        urlResponse = requests.get(url).text
-        soup = BeautifulSoup(urlResponse, 'lxml')
-        chpContent = soup.find("div", id="chapter-content")
-
-        # Get all paragraphs in chpContent
-        allP = chpContent.find_all("p")
-
-        # append to newList to print the output
-        newLis = []
-        with open("chapter.txt", "w", encoding="utf-8") as chapter:
-            chapter.write(f"{chapterObj['title']}\n")
-            for p in allP:
-                if p.text != "":
-                    print(p.text)
-                    newLis.append(p.text)
-                    chapter.write(f"{p.text}\n")
-                elif p.text == "":
-                    print("removed blank")
-                    allP.remove(p)
-except ValueError:
-    print("String not allowed")
+# there are two arrays inside "links"
+print(links[0][0]['title'])
